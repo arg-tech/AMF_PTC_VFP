@@ -1,0 +1,8 @@
+version: '1'
+
+services:
+ amf_ptc_vpf:
+  container_name: amf_ptc_vpf
+  build: .
+  ports:
+  - "8000:5000"

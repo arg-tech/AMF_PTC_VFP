@@ -5,13 +5,13 @@ from app.ptc_vpf import proposition_classification
 
 
 @application.route('/', methods=['GET', 'POST'])
-def amf_schemes():
+def amf_ptc():
     if request.method == 'POST':
         f = request.files['file']
         f.save(f.filename)
         ff = open(f.filename, 'r')
         content = json.load(ff)
-        # Classify the inference relations into 20 different argumentation schemes.
+        # Classify the I-nodes into Value-Fact-Policy classes
         response = proposition_classification(content)
         return jsonify(response)
     elif request.method == 'GET':

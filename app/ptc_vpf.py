@@ -1,12 +1,16 @@
 from datasets import Dataset
-from transformers import Trainer, AutoTokenizer, AutoModelForSequenceClassification
+from transformers import Trainer, AutoTokenizer, AutoModelForSequenceClassification, pipeline
 import numpy as np
 import json
+from amf_fast_inference import model
+from xaif_eval import xaif
 
 
 TOKENIZER = AutoTokenizer.from_pretrained("raruidol/ArgumentMining-EN-VFP")
-MODEL = AutoModelForSequenceClassification.from_pretrained("raruidol/ArgumentMining-EN-VFP")
-
+# MODEL = AutoModelForSequenceClassification.from_pretrained("raruidol/ArgumentMining-EN-VFP")
+MODEL_ID = "raruidol/ArgumentMining-EN-VFP"
+LOADER = model.ModelLoader(MODEL_ID)
+PRUNED_MODEL = LOADER.load_model()
 
 def preprocess_data(filexaif):
     proposition_ids = []
@@ -27,6 +31,23 @@ def tokenize_sequence(samples):
     return TOKENIZER(samples["text"], padding=True, truncation=True)
 
 
+def pipeline_predictions(pipeline, data):
+    labels = []
+    pipeline_input = []
+    for i in range(len(data['text'])):
+        sample = data['text'][i]
+        pipeline_input.append(sample)
+
+    outputs = pipeline(pipeline_input)
+    for out in outputs:
+        if out['score'] > 0.8:
+            labels.append(out['label'])
+        else:
+            labels.append('None')
+
+    return labels
+
+
 def make_predictions(trainer, tknz_data):
     predicted_logprobs = trainer.predict(tknz_data)
     predicted_labels = np.argmax(predicted_logprobs.predictions, axis=-1)
@@ -35,7 +56,7 @@ def make_predictions(trainer, tknz_data):
 
 
 def output_xaif(idents, labels, fileaif):
-    mapping_label = {0: "Value", 1: "Fact", 2: "Policy"}
+    #mapping_label = {0: "Value", 1: "Fact", 2: "Policy"}
 
     if "propositionClassifier" not in fileaif:
         fileaif['propositionClassifier'] = {'nodes': []}
@@ -44,9 +65,10 @@ def output_xaif(idents, labels, fileaif):
             fileaif['propositionClassifier']['nodes'] = []
 
     for i in range(len(labels)):
-        lb = mapping_label[labels[i]]
-        ident = idents[i]
-        fileaif['propositionClassifier']['nodes'].append({"nodeID": ident, "propType": lb})
+        if labels[i] is not None:
+            lb = labels[i]
+            ident = idents[i]
+            fileaif['propositionClassifier']['nodes'].append({"nodeID": ident, "propType": lb})
     return fileaif
 
 
@@ -56,14 +78,11 @@ def proposition_classification(xaif):
     # and a list of tuples with the corresponding "I" node ids to generate the final xaif file.
     dataset, ids = preprocess_data(xaif['AIF'])
 
-    # Tokenize the Dataset.
-    tokenized_data = dataset.map(tokenize_sequence, batched=True)
-
-    # Instantiate HF Trainer for predicting.
-    trainer = Trainer(MODEL)
+    # Inference Pipeline
+    pl = pipeline("text-classification", model=PRUNED_MODEL, tokenizer=TOKENIZER)
 
     # Predict the list of labels for all the pairs of "I" nodes.
-    labels = make_predictions(trainer, tokenized_data)
+    labels = pipeline_predictions(pl, dataset)
 
     # Prepare the xAIF output file.
     out_xaif = output_xaif(ids, labels, xaif)

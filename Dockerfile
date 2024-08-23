@@ -1,4 +1,4 @@
-FROM python:3
+FROM python:3.11
 
 RUN mkdir -p /home/amf_ptc_vpf
 WORKDIR /home/amf_ptc_vpf
@@ -17,5 +17,5 @@ RUN chmod +x boot.sh
 ENV FLASK_APP app
 
 
-EXPOSE 5000
+EXPOSE 5003
 ENTRYPOINT ["./boot.sh"]

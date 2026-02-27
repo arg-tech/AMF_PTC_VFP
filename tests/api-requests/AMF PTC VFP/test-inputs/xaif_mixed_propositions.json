@@ -1,0 +1,21 @@
+{
+  "AIF": {
+    "nodes": [
+      {"text": "We should invest more in renewable energy.", "type": "I", "nodeID": 1},
+      {"text": "Solar power costs have decreased by 89% since 2010.", "type": "I", "nodeID": 2},
+      {"text": "Environmental sustainability is a moral imperative.", "type": "I", "nodeID": 3},
+      {"text": "Default Inference", "type": "RA", "nodeID": 4}
+    ],
+    "edges": [
+      {"fromID": 2, "toID": 4, "edgeID": 0},
+      {"fromID": 4, "toID": 1, "edgeID": 1}
+    ],
+    "locutions": [],
+    "schemefulfillments": [],
+    "descriptorfulfillments": [],
+    "participants": []
+  },
+  "ova": {},
+  "dialog": {},
+  "text": {"txt": ""}
+}

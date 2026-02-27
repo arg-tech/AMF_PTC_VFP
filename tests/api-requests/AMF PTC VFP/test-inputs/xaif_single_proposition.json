@@ -1,0 +1,16 @@
+{
+  "AIF": {
+    "nodes": [
+      {"text": "The government must ban single-use plastics by 2030.", "type": "I", "nodeID": 1},
+      {"text": "The government said so.", "type": "L", "nodeID": 2}
+    ],
+    "edges": [],
+    "locutions": [],
+    "schemefulfillments": [],
+    "descriptorfulfillments": [],
+    "participants": []
+  },
+  "ova": {},
+  "dialog": {},
+  "text": {"txt": ""}
+}

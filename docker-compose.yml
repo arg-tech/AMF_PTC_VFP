@@ -1,5 +1,3 @@
-version: '1'
-
 services:
  amf_ptc_vpf:
   container_name: amf_ptc_vpf

@@ -1,3 +1,2 @@
 #!/bin/sh
-source venv/bin/activate
-exec gunicorn -b :5003 --access-logfile - --error-logfile - app --timeout 300
+exec gunicorn -b :5003 --workers 1 --access-logfile - --error-logfile - app:application --timeout 300

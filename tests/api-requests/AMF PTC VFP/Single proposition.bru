@@ -1,0 +1,51 @@
+meta {
+  name: Single proposition
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/
+  body: multipartForm
+  auth: inherit
+}
+
+headers {
+  Content-Type: multipart/form-data
+}
+
+body:multipart-form {
+  file: @file(test-inputs/xaif_single_proposition.json)
+}
+
+tests {
+  const validPropTypes = ["Value", "Fact", "Policy", "None"];
+
+  test("Response status is 200", function () {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response contains propositionClassifier with exactly one node", function () {
+    const body = res.getBody();
+    expect(body).to.have.property("propositionClassifier");
+    expect(body.propositionClassifier).to.have.property("nodes");
+    expect(body.propositionClassifier.nodes).to.be.an("array");
+    expect(body.propositionClassifier.nodes).to.have.length(1);
+  });
+
+  test("Classified node matches the input I-node ID", function () {
+    const body = res.getBody();
+    expect(body.propositionClassifier.nodes[0].nodeID).to.equal(1);
+  });
+
+  test("Classification label is valid", function () {
+    const body = res.getBody();
+    expect(validPropTypes).to.include(body.propositionClassifier.nodes[0].propType);
+  });
+
+  test("Non-I nodes are not classified", function () {
+    const body = res.getBody();
+    const classifiedIDs = body.propositionClassifier.nodes.map(n => n.nodeID);
+    expect(classifiedIDs).to.not.include(2);
+  });
+}

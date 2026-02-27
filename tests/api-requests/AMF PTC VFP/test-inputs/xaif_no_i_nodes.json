@@ -1,0 +1,16 @@
+{
+  "AIF": {
+    "nodes": [
+      {"text": "Some locution text.", "type": "L", "nodeID": 0},
+      {"text": "Default Inference", "type": "RA", "nodeID": 1}
+    ],
+    "edges": [],
+    "locutions": [],
+    "schemefulfillments": [],
+    "descriptorfulfillments": [],
+    "participants": []
+  },
+  "ova": {},
+  "dialog": {},
+  "text": {"txt": ""}
+}

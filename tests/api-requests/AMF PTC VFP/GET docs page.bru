@@ -1,0 +1,23 @@
+meta {
+  name: GET docs page
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/
+  body: none
+  auth: inherit
+}
+
+tests {
+  test("Response status is 200", function () {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response contains HTML documentation", function () {
+    const body = res.getBody();
+    expect(body).to.include("AMF-PTC-VPF");
+    expect(body).to.include("Proposition Type Classifier");
+  });
+}

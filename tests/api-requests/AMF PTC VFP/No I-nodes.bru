@@ -1,0 +1,39 @@
+meta {
+  name: No I-nodes
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/
+  body: multipartForm
+  auth: inherit
+}
+
+headers {
+  Content-Type: multipart/form-data
+}
+
+body:multipart-form {
+  file: @file(test-inputs/xaif_no_i_nodes.json)
+}
+
+tests {
+  test("Response status is 200", function () {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response contains propositionClassifier with empty nodes", function () {
+    const body = res.getBody();
+    expect(body).to.have.property("propositionClassifier");
+    expect(body.propositionClassifier).to.have.property("nodes");
+    expect(body.propositionClassifier.nodes).to.be.an("array");
+    expect(body.propositionClassifier.nodes).to.have.length(0);
+  });
+
+  test("Original AIF structure is preserved", function () {
+    const body = res.getBody();
+    expect(body).to.have.property("AIF");
+    expect(body.AIF.nodes).to.have.length(2);
+  });
+}
